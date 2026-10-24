@@ -1,0 +1,58 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+  body{font-family:system-ui,sans-serif;margin:0;padding:14px;background:#0d0d0f;color:#e9e5e3}
+  h2{margin:0 0 10px;font-size:15px;color:#e3b4b1}
+  input{width:70%;background:#1b1a1d;border:1px solid #2e2a2c;color:#e9e5e3;border-radius:6px;padding:8px;font:14px monospace}
+  button{background:#b23b36;border:1px solid #b23b36;color:#fff;border-radius:6px;padding:8px 14px;cursor:pointer;margin-left:6px}
+  ul{margin-top:10px;max-height:260px;overflow:auto;padding-left:18px;font-family:ui-monospace,monospace;font-size:12.5px}
+  .muted{color:#948b89;font-size:12px;margin-top:8px}
+</style>
+<h2>Subdomain Finder (crt.sh)</h2>
+<input id="domain" placeholder="example.com">
+<button id="go">Search</button>
+<p class="muted">Queries crt.sh's public certificate-transparency log directly from this panel — no local tool required. Needs internet access; results depend on crt.sh being reachable.</p>
+<div id="status" class="muted"></div>
+<ul id="results"></ul>
+<script>
+  var domain = document.getElementById('domain');
+  var results = document.getElementById('results');
+  var status = document.getElementById('status');
+
+  function render(list) {
+    results.innerHTML = '';
+    list.forEach(function (d) {
+      var li = document.createElement('li');
+      li.textContent = d;
+      results.appendChild(li);
+    });
+  }
+
+  document.getElementById('go').onclick = function () {
+    var d = domain.value.trim();
+    if (!d) return;
+    status.textContent = 'Searching…';
+    results.innerHTML = '';
+    fetch('https://crt.sh/?q=%25.' + encodeURIComponent(d) + '&output=json')
+      .then(function (r) { return r.json(); })
+      .then(function (rows) {
+        var set = {};
+        rows.forEach(function (row) {
+          (row.name_value || '').split('\n').forEach(function (n) { set[n.trim()] = true; });
+        });
+        var list = Object.keys(set).sort();
+        render(list);
+        status.textContent = list.length + ' names found.';
+        parent.postMessage({ type: 'saveData', data: { lastDomain: d, lastCount: list.length } }, '*');
+      })
+      .catch(function (e) { status.textContent = 'Lookup failed: ' + e.message; });
+  };
+
+  window.addEventListener('message', function (e) {
+    var msg = e.data || {};
+    if (msg.type === 'init' && msg.data && msg.data.lastDomain) {
+      domain.value = msg.data.lastDomain;
+      status.textContent = 'Last search: ' + msg.data.lastCount + ' names for ' + msg.data.lastDomain + '. Press Search to refresh.';
+    }
+  });
+</script>

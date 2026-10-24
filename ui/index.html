@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nazgul</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-mode="run">
+  <aside class="sidebar">
+    <div class="brand">☠ Nazgul</div>
+    <input id="search" placeholder="Search…" />
+    <button id="btn-new" class="primary">+ New</button>
+
+    <div class="list-group">
+      <h4>Commands</h4>
+      <ul id="list-commands"></ul>
+    </div>
+    <div class="list-group">
+      <h4>Panels</h4>
+      <ul id="list-panels"></ul>
+    </div>
+
+    <div class="sidebar-foot">
+      <button id="btn-export">Export</button>
+      <button id="btn-import">Import</button>
+      <input type="file" id="file-import" accept=".json" hidden />
+    </div>
+  </aside>
+
+  <!-- ================= RUN VIEW (default) ================= -->
+  <main class="run-only">
+    <header class="topbar">
+      <div>
+        <h2 id="run-title"></h2>
+        <p id="run-desc" class="hint"></p>
+      </div>
+      <span id="run-badge" class="badge" hidden></span>
+      <span class="spacer"></span>
+      <button id="btn-edit">✎ Edit</button>
+    </header>
+
+    <!-- custom UI takes the main stage when attached -->
+    <section class="card grow" id="ui-card" hidden>
+      <iframe id="ui-frame" sandbox="allow-scripts"></iframe>
+    </section>
+
+    <!-- auto-generated form, used by plain commands with no custom UI -->
+    <section class="card" id="args-card" hidden>
+      <div id="args"></div>
+    </section>
+
+    <div class="runbar" id="runbar">
+      <code id="preview"></code>
+      <button id="btn-run" class="primary">▶ Run</button>
+    </div>
+
+    <section class="card output-card" id="output-card">
+      <div class="out-head"><span>Output</span><small id="out-meta"></small></div>
+      <pre id="out" class="out">Nothing run yet.</pre>
+    </section>
+  </main>
+
+  <!-- ================= EDIT VIEW ================= -->
+  <main class="edit-only">
+    <header class="topbar">
+      <h2 id="edit-title">Edit</h2>
+      <span class="spacer"></span>
+      <button id="btn-cancel">Cancel</button>
+      <button id="btn-save" class="primary">💾 Save</button>
+    </header>
+
+    <section class="card">
+      <div class="row">
+        <label>Kind
+          <select id="f-kind">
+            <option value="command">Command — runs a shell command</option>
+            <option value="panel">Panel — custom interface only, no shell command</option>
+          </select>
+        </label>
+        <label>Name<input id="f-name" placeholder="e.g. Nmap Scan" /></label>
+      </div>
+      <label>Description<input id="f-desc" placeholder="What does this do?" /></label>
+    </section>
+
+    <section class="card" id="command-fields">
+      <label>Command template
+        <textarea id="f-template" rows="3" spellcheck="false" placeholder="nmap {{flags|-sV -T4}} {{target}}"></textarea>
+      </label>
+      <p class="hint">Use <code>{{name}}</code> or <code>{{name|default}}</code> for arguments. Detected: <span id="detected">none</span></p>
+
+      <div class="row">
+        <label>Shell
+          <select id="f-shell">
+            <option value="default">System default (cmd on Windows, sh elsewhere)</option>
+            <option value="wsl">WSL (bash inside Windows Subsystem for Linux)</option>
+          </select>
+        </label>
+        <label id="distro-wrap" hidden>WSL distro (optional)<input id="f-distro" placeholder="e.g. Kali-Linux" /></label>
+      </div>
+
+      <label>Working directory (optional)
+        <input id="f-cwd" placeholder="Windows path, or a Linux path like ~/recon when using WSL" />
+      </label>
+    </section>
+
+    <section class="card">
+      <h3>Custom interface <small id="ui-hint"></small></h3>
+      <div class="actions">
+        <span id="ui-status" class="hint"></span>
+        <span class="spacer"></span>
+        <button id="btn-ui">Attach .html file</button>
+        <button id="btn-ui-remove" hidden>Remove</button>
+        <input type="file" id="file-ui" accept=".html,.htm" hidden />
+      </div>
+    </section>
+
+    <div class="actions">
+      <button id="btn-delete" class="danger" hidden>Delete</button>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

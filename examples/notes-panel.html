@@ -1,0 +1,64 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+  body{font-family:system-ui,sans-serif;margin:0;padding:14px;background:#0d0d0f;color:#e9e5e3}
+  h2{margin:0 0 10px;font-size:15px;color:#e3b4b1}
+  textarea{width:100%;background:#1b1a1d;border:1px solid #2e2a2c;color:#e9e5e3;border-radius:6px;padding:8px;font:13px monospace;height:70px}
+  button{background:#b23b36;border:1px solid #b23b36;color:#fff;border-radius:6px;padding:7px 12px;cursor:pointer;margin-top:6px}
+  .note{background:#1b1a1d;border:1px solid #2e2a2c;border-radius:6px;padding:8px 36px 8px 8px;margin-top:8px;white-space:pre-wrap;font-size:12.5px;font-family:ui-monospace,monospace;position:relative}
+  .note time{display:block;color:#948b89;font-size:11px;margin-bottom:4px}
+  .note button{position:absolute;top:6px;right:6px;padding:2px 8px;font-size:11px;margin:0}
+  .hint{color:#948b89;font-size:12px}
+</style>
+<h2>Notes</h2>
+<p class="hint">Paste a command's output here to keep track of findings. Notes are saved with this panel, so they're still here next time you open it.</p>
+<textarea id="input" placeholder="Paste an output or write a finding…"></textarea>
+<button id="add">+ Save note</button>
+<div id="list"></div>
+<script>
+  var input = document.getElementById('input');
+  var list = document.getElementById('list');
+  var notes = [];
+
+  function render() {
+    list.innerHTML = '';
+    notes.slice().reverse().forEach(function (n) {
+      var div = document.createElement('div');
+      div.className = 'note';
+      var t = document.createElement('time');
+      t.textContent = n.at;
+      var del = document.createElement('button');
+      del.textContent = 'Delete';
+      del.onclick = function () {
+        notes = notes.filter(function (x) { return x.id !== n.id; });
+        save();
+        render();
+      };
+      div.appendChild(t);
+      div.appendChild(del);
+      div.appendChild(document.createTextNode(n.text));
+      list.appendChild(div);
+    });
+  }
+
+  function save() {
+    parent.postMessage({ type: 'saveData', data: { notes: notes } }, '*');
+  }
+
+  document.getElementById('add').onclick = function () {
+    var v = input.value.trim();
+    if (!v) return;
+    notes.push({ id: Date.now() + Math.random(), text: v, at: new Date().toLocaleString() });
+    input.value = '';
+    save();
+    render();
+  };
+
+  window.addEventListener('message', function (e) {
+    var msg = e.data || {};
+    if (msg.type === 'init' && msg.data && Array.isArray(msg.data.notes)) {
+      notes = msg.data.notes;
+      render();
+    }
+  });
+</script>

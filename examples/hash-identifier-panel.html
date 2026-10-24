@@ -1,0 +1,49 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+  body{font-family:system-ui,sans-serif;margin:0;padding:14px;background:#0d0d0f;color:#e9e5e3}
+  h2{margin:0 0 10px;font-size:15px;color:#e3b4b1}
+  textarea{width:100%;background:#1b1a1d;border:1px solid #2e2a2c;color:#e9e5e3;border-radius:6px;padding:8px;font:13px monospace;height:70px}
+  ul{margin-top:10px;padding-left:18px;font-size:13px}
+  .muted{color:#948b89;font-size:12px}
+</style>
+<h2>Hash Identifier</h2>
+<textarea id="hash" placeholder="Paste a hash…"></textarea>
+<p class="muted">Guesses the likely hash type from its length and character set, entirely offline. Heuristic only, not a guarantee.</p>
+<ul id="guesses"></ul>
+<script>
+  var hash = document.getElementById('hash');
+  var guesses = document.getElementById('guesses');
+  var rules = [
+    [/^[a-f0-9]{32}$/i, 'MD5 or NTLM (32 hex chars)'],
+    [/^[a-f0-9]{40}$/i, 'SHA-1 (40 hex chars)'],
+    [/^[a-f0-9]{56}$/i, 'SHA-224 (56 hex chars)'],
+    [/^[a-f0-9]{64}$/i, 'SHA-256 (64 hex chars)'],
+    [/^[a-f0-9]{96}$/i, 'SHA-384 (96 hex chars)'],
+    [/^[a-f0-9]{128}$/i, 'SHA-512 (128 hex chars)'],
+    [/^\$2[aby]\$\d{2}\$/, 'bcrypt'],
+    [/^\$1\$/, 'MD5 crypt (Unix)'],
+    [/^\$6\$/, 'SHA-512 crypt (Unix)'],
+    [/^[A-Fa-f0-9]{32}:[A-Fa-f0-9]{32}$/, 'NTLM pair (LM:NT)']
+  ];
+
+  hash.oninput = function () {
+    var v = hash.value.trim();
+    guesses.innerHTML = '';
+    if (!v) return;
+    var any = false;
+    rules.forEach(function (r) {
+      if (r[0].test(v)) {
+        any = true;
+        var li = document.createElement('li');
+        li.textContent = r[1];
+        guesses.appendChild(li);
+      }
+    });
+    if (!any) {
+      var li = document.createElement('li');
+      li.textContent = 'No common pattern matched.';
+      guesses.appendChild(li);
+    }
+  };
+</script>

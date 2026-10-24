@@ -1,0 +1,57 @@
+:root { --bg:#111113; --panel:#1b1a1d; --line:#2e2a2c; --text:#e9e5e3; --muted:#948b89; --accent:#b23b36; --accent-2:#7c2a27; --danger:#e5484d; --ok:#4fae5f; }
+* { box-sizing: border-box; }
+[hidden] { display:none !important; }
+body { margin:0; height:100vh; display:grid; grid-template-columns:250px 1fr; background:var(--bg); color:var(--text); font:14px/1.4 system-ui,sans-serif; overflow:hidden; }
+body[data-mode="run"]  .edit-only { display:none !important; }
+body[data-mode="edit"] .run-only  { display:none !important; }
+
+/* sidebar */
+.sidebar { background:var(--panel); border-right:1px solid var(--line); display:flex; flex-direction:column; padding:12px; gap:10px; overflow:hidden; }
+.brand { font-weight:700; font-size:17px; letter-spacing:.5px; color:#e3b4b1; }
+.list-group { display:flex; flex-direction:column; min-height:0; }
+.list-group h4 { margin:8px 0 4px; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+.list-group ul { list-style:none; margin:0; padding:0; overflow:auto; }
+.list-group:nth-of-type(1) { flex:1.4; }
+.list-group:nth-of-type(2) { flex:1; }
+#list-commands li, #list-panels li { padding:8px 10px; border-radius:8px; cursor:pointer; }
+#list-commands li:hover, #list-panels li:hover { background:#272225; }
+#list-commands li.active, #list-panels li.active { background:var(--accent); color:#fff; }
+#list-commands li small, #list-panels li small { display:block; opacity:.75; font-family:monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sidebar-foot { display:flex; gap:6px; }
+.sidebar-foot button { flex:1; }
+
+/* main */
+main { padding:16px; display:flex; flex-direction:column; gap:12px; min-height:0; overflow:auto; }
+.topbar { display:flex; align-items:center; gap:12px; }
+.topbar h2 { margin:0; font-size:18px; }
+.badge { background:#2a2426; border:1px solid var(--line); border-radius:999px; padding:2px 10px; font-size:12px; color:var(--muted); }
+.card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:10px; }
+.card.grow { flex:1; min-height:320px; padding:0; overflow:hidden; }
+.card h3 { margin:0; font-size:14px; } .card h3 small { color:var(--muted); font-weight:400; }
+.row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+/* forms */
+label { display:flex; flex-direction:column; gap:4px; color:var(--muted); font-size:12px; }
+input, textarea, select { background:#0d0d0f; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:8px; font:inherit; }
+textarea { font-family:ui-monospace,Consolas,monospace; resize:vertical; }
+input:focus, textarea:focus, select:focus { outline:1px solid var(--accent); }
+button { background:#272225; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:7px 12px; cursor:pointer; font:inherit; }
+button:hover { filter:brightness(1.25); }
+button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+button.danger { color:var(--danger); }
+button:disabled { opacity:.5; cursor:wait; }
+.actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.spacer { flex:1; }
+.hint { margin:0; color:var(--muted); font-size:12px; }
+code { background:#0d0d0f; padding:2px 5px; border-radius:4px; font-family:ui-monospace,Consolas,monospace; }
+
+/* run view */
+#args { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
+.runbar { display:flex; gap:10px; align-items:center; }
+.runbar code { flex:1; color:var(--muted); padding:7px 10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#ui-frame { width:100%; height:100%; flex:1; border:0; background:#fff; }
+.output-card { gap:6px; }
+.out-head { display:flex; gap:10px; align-items:baseline; font-size:12px; color:var(--muted); }
+.out { margin:0; background:#0a0a0b; border-radius:8px; padding:10px; height:170px; overflow:auto; white-space:pre-wrap; font-family:ui-monospace,Consolas,monospace; font-size:12.5px; }
+.out .err { color:#ff8a8a; }
+.out .ok { color:var(--ok); }
